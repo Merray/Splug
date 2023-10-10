@@ -7,6 +7,33 @@
     <groupId>fr.jim</groupId>
     <artifactId>botvouivrarium</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>
+                                fr.jim.mainapp.MainApp
+                            </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>
@@ -31,5 +58,6 @@
             <version>2.19.0</version>
         </dependency>
     </dependencies>
+
 
 </project>

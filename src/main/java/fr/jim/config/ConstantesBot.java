@@ -1,9 +1,6 @@
 package fr.jim.config;
 
 public class ConstantesBot {
-
-    // Token de l'application, ne pas commit si le git est publique
-    public static String TOKEN = "";
     public static boolean UPSERT_COMMANDS = true;
 
     // PLAYING/LISTENING etc..

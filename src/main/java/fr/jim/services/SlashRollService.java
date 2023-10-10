@@ -21,7 +21,7 @@ public class SlashRollService {
 
         int nbFaces = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES).getAsInt();
 
-        int resultat = this.random.nextInt(nbFaces + 1);
+        int resultat = this.random.nextInt(nbFaces) + 1;
 
         event.getHook().sendMessage("Tu as lancé un dé " + nbFaces + " et tu as fait un " + resultat + " !").queue();
     }
