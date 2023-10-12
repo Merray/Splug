@@ -1,4 +1,4 @@
-package fr.jim.services;
+package fr.jim.services.slash;
 
 import fr.jim.config.ConstantesBot;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

@@ -4,6 +4,7 @@ import fr.jim.config.ConstantesBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,16 +16,23 @@ public class CommandUtils {
 
         if (guilde != null) {
 
-            // /roll
-//            guilde.upsertCommand(ConstantesBot.SLASH_ROLL,
-//                    ConstantesBot.DESCRIPTION_SLASH_ROLL).queue();
             guilde.updateCommands().addCommands(
                     Commands.slash(ConstantesBot.SLASH_ROLL, ConstantesBot.DESCRIPTION_SLASH_ROLL)
                             .addOption(OptionType.INTEGER, ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES
-                                    , ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES_DESCRIPTION, true)
+                                    , ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES_DESCRIPTION, true),
+                    Commands.slash("griffon", "commandes associées au GN griffon")
+                            .addOptions(
+                                    new OptionData(OptionType.STRING, "action", "Action à faire pour ce GN", true)
+                                            .addChoice("add", "add")
+                                            .addChoice("remove", "remove")
+                                            .addChoice("list", "list")
+                            )
             ).queue();
             LOGGER.info("Update de la commande {} pour la guilde {}"
                     , ConstantesBot.SLASH_ROLL, guilde.getName());
+
+            LOGGER.info("Update de la commande {} pour la guilde {}"
+                    , "griffon", guilde.getName());
 
         }
     }
