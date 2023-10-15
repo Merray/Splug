@@ -31,9 +31,12 @@ public class MembresGriffonRepository extends BasicRepository {
         PreparedStatement statement;
         try (Connection c = this.connecter();) {
             c.setAutoCommit(false);
-            statement = c.prepareStatement("INSERT INTO membres_griffon (id_discord, nom) VALUES (?, ?)");
+            statement = c.prepareStatement(
+                    "INSERT INTO membres_griffon (id_discord, nom, classe, race) VALUES (?, ?, ?, ?)");
             statement.setLong(1, membreGriffon.getIdDiscord());
             statement.setString(2, membreGriffon.getNom());
+            statement.setString(3, membreGriffon.getClasse());
+            statement.setString(4, membreGriffon.getRace());
             statement.executeUpdate();
             c.commit();
 

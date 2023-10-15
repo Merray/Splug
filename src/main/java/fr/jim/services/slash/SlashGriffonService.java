@@ -2,9 +2,15 @@ package fr.jim.services.slash;
 
 import fr.jim.config.ConstantesBot;
 import fr.jim.entites.MembreGriffon;
+import fr.jim.mappers.ModaleGriffon;
 import fr.jim.services.db.MembreGriffonService;
 import fr.jim.utils.EmbedUtils;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +26,16 @@ public class SlashGriffonService {
 
     public void griffon(SlashCommandInteractionEvent event) {
 
-        event.deferReply().queue();
 
         String action = event.getOption(ConstantesBot.OPTION_SLASH_GRIFFON_ACTION).getAsString();
 
         String nom = event.getMember().getEffectiveName();
 
-        long idDiscord = event.getMember().getIdLong();
+        String idDiscord = event.getMember().getId();
+        long idDiscordLong = event.getMember().getIdLong();
+
+        boolean isInscription = false;
+
 
         String message = "";
 
@@ -35,18 +44,16 @@ public class SlashGriffonService {
         switch (action) {
 
             case ConstantesBot.OPTION_SLASH_GRIFFON_ACTION_ADD:
-                if (membreGriffonService.findByIdDiscord(idDiscord) != null) {
-                    message = "<@" + idDiscord + "> est déjà inscrit(e) à Griffon !";
-                } else {
-                    membreGriffonService.create(new MembreGriffon(idDiscord, nom));
-                    message = "<@" + idDiscord + "> vient de s'inscrire à Griffon !";
-                }
-                enGras = "Inscription";
+                LOGGER.info("/roll add lancée par " + nom);
+                isInscription = true;
+                event.replyModal(this.creerModaleInscription(idDiscord, nom)).queue();
                 break;
 
             case ConstantesBot.OPTION_SLASH_GRIFFON_ACTION_REMOVE:
-                if (membreGriffonService.findByIdDiscord(idDiscord) != null) {
-                    membreGriffonService.deleteByIdDiscord(idDiscord);
+                LOGGER.info("/roll remove lancée par " + nom);
+                isInscription = false;
+                if (membreGriffonService.findByIdDiscord(idDiscordLong) != null) {
+                    membreGriffonService.deleteByIdDiscord(idDiscordLong);
                     message = "<@" + idDiscord + "> vient de se désinscrire de Griffon !";
                 } else {
                     message = "<@" + idDiscord + "> n'est pas inscrit(e) à Griffon";
@@ -55,10 +62,11 @@ public class SlashGriffonService {
                 break;
 
             case ConstantesBot.OPTION_SLASH_GRIFFON_ACTION_LIST:
-
+                LOGGER.info("/roll list lancée par " + nom);
+                isInscription = false;
                 List<MembreGriffon> listeInscrits = membreGriffonService.findAll();
 
-                String noms = listeInscrits.stream().map(MembreGriffon::getNom).collect(Collectors.joining(", "));
+                String noms = listeInscrits.stream().map(MembreGriffon::getInfos).collect(Collectors.joining("\n"));
                 message = noms;
                 enGras = "Liste des membres inscrits";
                 break;
@@ -67,7 +75,66 @@ public class SlashGriffonService {
         }
 
 
+        if (!isInscription) {
+            event.deferReply().queue();
+            event.getHook().sendMessageEmbeds(EmbedUtils
+                    .embedReponse("Griffon", enGras, message, ConstantesBot.FICHIER_GRIFFON_THUMBNAIL).build()).queue();
+        }
+    }
+
+    private Modal creerModaleInscription(String idDiscord, String nomJoueur) {
+
+        TextInput discordId = TextInput
+                .create(ConstantesBot.MODALE_GRIFFON_ID_DISCORD,
+                        ConstantesBot.MODALE_GRIFFON_ID_DISCORD_LABEL, TextInputStyle.SHORT)
+                .setMinLength(1)
+                .setMaxLength(50).setValue(idDiscord).build();
+
+        TextInput nom = TextInput
+                .create(ConstantesBot.MODALE_GRIFFON_NOM,
+                        ConstantesBot.MODALE_GRIFFON_NOM_LABEL, TextInputStyle.SHORT)
+                .setMinLength(1)
+                .setMaxLength(50).setValue(nomJoueur).build();
+
+        TextInput classe = TextInput
+                .create(ConstantesBot.MODALE_GRIFFON_CLASSE,
+                        ConstantesBot.MODALE_GRIFFON_CLASSE_LABEL, TextInputStyle.SHORT)
+                .setPlaceholder(ConstantesBot.MODALE_GRIFFON_CLASSE_PLACEHOLDER).setMinLength(1)
+                .setMaxLength(50).setRequired(true).build();
+
+        TextInput race = TextInput
+                .create(ConstantesBot.MODALE_GRIFFON_RACE,
+                        ConstantesBot.MODALE_GRIFFON_RACE_LABEL, TextInputStyle.SHORT)
+                .setPlaceholder(ConstantesBot.MODALE_GRIFFON_RACE_PLACEHOLDER).setMinLength(1)
+                .setMaxLength(50).setRequired(true).build();
+
+        return Modal
+                .create(ConstantesBot.MODALE_GRIFFON,
+                        ConstantesBot.MODALE_GRIFFON_TITRE)
+                .addActionRows(ActionRow.of(discordId), ActionRow.of(nom), ActionRow.of(classe),
+                        ActionRow.of(race)).build();
+
+    }
+
+    public void inscrirePersonne(ModaleGriffon modaleGriffon, ModalInteractionEvent event) {
+
+
+        event.deferReply().queue();
+        String message = "";
+
+        if (membreGriffonService.findByIdDiscord(Long.parseLong(modaleGriffon.getDiscordId())) != null) {
+            message = "<@" + modaleGriffon.getDiscordId() + "> est déjà inscrit(e) à Griffon !";
+        } else {
+            membreGriffonService.create(
+                    new MembreGriffon(Long.parseLong(modaleGriffon.getDiscordId()), modaleGriffon.getNom(),
+                            modaleGriffon.getClasse(),
+                            modaleGriffon.getRace()));
+            message = "<@" + modaleGriffon.getDiscordId() + "> vient de s'inscrire à Griffon en tant que " +
+                    modaleGriffon.getClasse() + " " + modaleGriffon.getRace();
+        }
+
         event.getHook().sendMessageEmbeds(EmbedUtils
-                .embedReponse("Griffon", enGras, message).build()).queue();
+                        .embedReponse("Griffon", "Inscription", message, ConstantesBot.FICHIER_GRIFFON_THUMBNAIL).build())
+                .queue();
     }
 }

@@ -17,9 +17,11 @@ public class CommandUtils {
         if (guilde != null) {
 
             guilde.updateCommands().addCommands(
+                    // Slash
                     Commands.slash(ConstantesBot.SLASH_ROLL, ConstantesBot.DESCRIPTION_SLASH_ROLL)
-                            .addOption(OptionType.INTEGER, ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES
-                                    , ConstantesBot.OPTION_SLASH_ROLL_NOMBRE_FACES_DESCRIPTION, true),
+                            .addOption(OptionType.STRING, ConstantesBot.OPTION_SLASH_ROLL_OPTIONS
+                                    , ConstantesBot.OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION, true),
+                    // Griffon
                     Commands.slash("griffon", "commandes associées au GN griffon")
                             .addOptions(
                                     new OptionData(OptionType.STRING, "action", "Action à faire pour ce GN", true)

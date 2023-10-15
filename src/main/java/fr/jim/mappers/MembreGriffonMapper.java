@@ -23,7 +23,10 @@ public class MembreGriffonMapper {
             while (set.next()) {
                 membreGriffon = new MembreGriffon(set.getInt(ConstantesDb.COL_MEMBRE_GRIFFON_ID),
                         set.getLong(ConstantesDb.COL_MEMBRE_GRIFFON_ID_DISCORD),
-                        set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_NOM));
+                        set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_NOM)
+                        , set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_CLASSE)
+                        , set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_RACE));
+
 
                 membreGriffonList.add(membreGriffon);
             }
@@ -45,7 +48,9 @@ public class MembreGriffonMapper {
             if (set.next()) {
                 membreGriffon = new MembreGriffon(set.getInt(ConstantesDb.COL_MEMBRE_GRIFFON_ID),
                         set.getLong(ConstantesDb.COL_MEMBRE_GRIFFON_ID_DISCORD),
-                        set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_NOM));
+                        set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_NOM)
+                        , set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_CLASSE)
+                        , set.getString(ConstantesDb.COL_MEMBRE_GRIFFON_RACE));
             }
 
         } catch (SQLException e) {

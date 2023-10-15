@@ -2,6 +2,7 @@ package fr.jim.mainapp;
 
 import fr.jim.config.ConstantesBot;
 import fr.jim.exceptions.MissingTokenException;
+import fr.jim.listeners.BotModalListener;
 import fr.jim.listeners.BotSlashCommandListener;
 import fr.jim.utils.CommandUtils;
 import fr.jim.utils.PropertiesUtils;
@@ -32,13 +33,13 @@ public class MainApp {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.playing(ConstantesBot.PLAYING_D_AND_D))
-                .addEventListeners(new BotSlashCommandListener())
+                .addEventListeners(new BotSlashCommandListener(), new BotModalListener())
                 .build().awaitReady();
 
         LOGGER.info("BOT PRET");
 
 
-        if (Boolean.getBoolean(APP_PROPERTIES.getProperty(ConstantesBot.UPDATE_COMMANDES))) {
+        if (Boolean.parseBoolean(APP_PROPERTIES.getProperty(ConstantesBot.UPDATE_COMMANDES))) {
 
             Guild guildeTest = bot.getGuildById(1024955895781806081L);
 //            Guild guildeVouivrarium = bot.getGuildById(673141124944363530L);
