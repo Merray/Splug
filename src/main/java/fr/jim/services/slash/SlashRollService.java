@@ -68,6 +68,7 @@ public class SlashRollService {
                 total = 0;
                 currentRoll.setSymbole("");
 
+                // Déterminer tous les attributs du roll
                 if (roll.contains("d")) {
 
                     // 1d6-1 1d12+2
@@ -102,22 +103,44 @@ public class SlashRollService {
 
                 }
 
+                // Alimenter les intitulés des rolls.
                 for (int z = 0; z < currentRoll.getNbLancers(); z++) {
 
                     if (!roll.contains("d")) {
-                        currentRoll.getResultatsRolls().add("1d" + roll);
+
+                        if (currentRoll.getModificateur() != 0) {
+
+                            currentRoll.getResultatsRolls().add("1d" + roll.split("[\\+\\-]")[0]);
+
+                        } else {
+
+                            currentRoll.getResultatsRolls().add("1d" + roll);
+
+                        }
+
+
                     } else {
 
-                        currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1]);
+                        if (currentRoll.getModificateur() != 0) {
+
+                            currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1].split("[\\+\\-]")[0]);
+
+                        } else {
+
+                            currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1]);
+
+                        }
+
+
                     }
                 }
 
+                // Alimenter les résultats des rolls
                 for (int i = 0; i < currentRoll.getNbLancers(); i++) {
 
+                    res = random.nextInt(currentRoll.getNbFaces()) + 1;
 
                     if (StringUtils.isEmpty(currentRoll.getSymbole())) {
-
-                        res = random.nextInt(currentRoll.getNbFaces()) + 1;
 
                         total += (res);
                         currentRoll.getResultats().add(Integer.toString(res));
@@ -126,14 +149,12 @@ public class SlashRollService {
 
                         if ("+".equals(currentRoll.getSymbole())) {
 
-                            res = random.nextInt(currentRoll.getNbFaces()) + currentRoll.getModificateur() + 1;
-                            total += res;
+                            total += res + currentRoll.getModificateur();
                             currentRoll.getResultats().add((Integer.toString(res)));
 
                         } else {
 
-                            res = random.nextInt(currentRoll.getNbFaces()) - currentRoll.getModificateur() + 1;
-                            total += res;
+                            total += res - currentRoll.getModificateur();
                             currentRoll.getResultats().add((Integer.toString(res)));
 
 
@@ -143,7 +164,33 @@ public class SlashRollService {
 
                 }
 
-                currentRoll.getTotal().append(total + "**");
+                // Alimenter le total du roll
+                if (currentRoll.getNbLancers() > 1) {
+
+                    if ("+".equals(currentRoll.getSymbole())) {
+
+                        total -= currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
+
+                        currentRoll.getTotal()
+                                .append((total - currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
+                                        currentRoll.getModificateur() + " = " + total + "**");
+
+                    } else if ("-".equals(currentRoll.getSymbole())) {
+
+                        total += currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
+
+                        currentRoll.getTotal()
+                                .append((total + currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
+                                        currentRoll.getModificateur() + " = " + total + "**");
+
+                    } else {
+
+                        currentRoll.getTotal().append(total + "**");
+                    }
+                }
+
+
+                // Ajout du roll complet à la liste des rolls de la commande
                 listeRolls.add(currentRoll);
 
             }

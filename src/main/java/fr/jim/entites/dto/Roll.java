@@ -80,7 +80,7 @@ public class Roll {
     @Override public String toString() {
 
         if (this.getResultatsRolls().size() == 1) {
-            return this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) + "\n" + this.getTotal() +
+            return this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
                     "\n-------------------\n";
         } else {
 
