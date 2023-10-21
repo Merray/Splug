@@ -3,7 +3,7 @@ package fr.jim.config;
 public class ConstantesDb {
 
     // PROPERTIES
-    //public static String PATH_TO_APPLICATION_PROPERTIES = "src/main/resources/application.properties";
+    //  public static String PATH_TO_APPLICATION_PROPERTIES = "src/main/resources/application.properties";
     public static String PATH_TO_APPLICATION_PROPERTIES = "application.properties";
     public static String DB_URL = "db.url";
     public static String DB_USER = "db.user";

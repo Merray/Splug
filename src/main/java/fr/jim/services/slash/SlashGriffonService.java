@@ -1,7 +1,7 @@
 package fr.jim.services.slash;
 
 import fr.jim.config.ConstantesBot;
-import fr.jim.entites.MembreGriffon;
+import fr.jim.entites.db.MembreGriffon;
 import fr.jim.mappers.ModaleGriffon;
 import fr.jim.services.db.MembreGriffonService;
 import fr.jim.utils.EmbedUtils;
@@ -44,7 +44,7 @@ public class SlashGriffonService {
         switch (action) {
 
             case ConstantesBot.OPTION_SLASH_GRIFFON_ACTION_ADD:
-                LOGGER.info("/roll add lancée par " + nom);
+                LOGGER.info("/griffon add lancée par " + nom);
                 isInscription = true;
                 event.replyModal(this.creerModaleInscription(idDiscord, nom)).queue();
                 break;

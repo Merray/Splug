@@ -17,7 +17,7 @@ public class CommandUtils {
         if (guilde != null) {
 
             guilde.updateCommands().addCommands(
-                    // Slash
+                    // roll
                     Commands.slash(ConstantesBot.SLASH_ROLL, ConstantesBot.DESCRIPTION_SLASH_ROLL)
                             .addOption(OptionType.STRING, ConstantesBot.OPTION_SLASH_ROLL_OPTIONS
                                     , ConstantesBot.OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION, true),

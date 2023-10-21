@@ -1,4 +1,4 @@
-package fr.jim.entites;
+package fr.jim.entites.db;
 
 public class MembreGriffon {
 

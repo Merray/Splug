@@ -1,13 +1,12 @@
 package fr.jim.services.slash;
 
 import fr.jim.config.ConstantesBot;
-import fr.jim.utils.EmbedUtils;
+import fr.jim.entites.dto.Roll;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +35,9 @@ public class SlashRollService {
 
         rollMatcher = rollPattern.matcher(rollOptions);
 
+
         if (!rollMatcher.matches()) {
-            event.getHook().sendMessage("Les options ne sont pas correctes, voici quelques exemples :\n" +
+            event.reply("Les options ne sont pas correctes, voici quelques exemples :\n" +
                     "/roll 1d6 2d12\n" +
                     "/roll 6 12-1 10+2\n" +
                     "/roll 1d6+1\n" +
@@ -47,106 +47,116 @@ public class SlashRollService {
             List<String> rolls = Arrays.stream(rollOptions.split(" ")).collect(Collectors.toList());
 
 
-            List<String> resultats = new ArrayList<>();
-            List<String> resultatsRolls = new ArrayList<>();
-            int nbLancers = 1;
-            int nbFaces = 6;
-            int modificateur = 0;
-            String symbole = "";
+            if (rolls.size() > 20) {
+
+                event.reply("Nombre max de rolls : 20. Tu en as lancé " + rolls.size()).setEphemeral(true).queue();
+                LOGGER.info("Trop de rolls : " + rolls.size());
+                return;
+            }
+
+
+            List<Roll> listeRolls = new ArrayList<>();
+            Roll currentRoll;
+            int res;
+            int total;
 
             for (String roll : rolls) {
 
-                symbole = "";
 
-                System.out.println("roll : " + roll);
+                currentRoll = new Roll();
+
+                total = 0;
+                currentRoll.setSymbole("");
+
                 if (roll.contains("d")) {
 
                     // 1d6-1 1d12+2
                     if (roll.contains("-") || roll.contains("+")) {
 
                         String[] valeurs = roll.split("d");
-                        nbLancers = Integer.parseInt(valeurs[0]);
-                        nbFaces = Integer.parseInt(valeurs[1].split("[\\+\\-]")[0]);
-                        modificateur = Integer.parseInt(valeurs[1].split("[\\+\\-]")[1]);
-                        symbole = valeurs[1].contains("+") ? "+" : "-";
-
-
-                        System.out.println("nbLancers : " + nbLancers
-                                + "\nnbFaces: " + nbFaces
-                                + "\nsymbole: " + symbole
-                                + "\nmodificateur: " + modificateur);
+                        currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
+                        currentRoll.setNbFaces(Integer.parseInt(valeurs[1].split("[\\+\\-]")[0]));
+                        currentRoll.setModificateur(Integer.parseInt(valeurs[1].split("[\\+\\-]")[1]));
+                        currentRoll.setSymbole(valeurs[1].contains("+") ? "+" : "-");
 
 
                     } else {
                         // 1d6 2d12
                         String[] valeurs = roll.split("d");
-                        nbLancers = Integer.parseInt(valeurs[0]);
-                        nbFaces = Integer.parseInt(valeurs[1]);
+                        currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
+                        currentRoll.setNbFaces(Integer.parseInt(valeurs[1]));
                     }
 
                 } else {
                     // 6 12
-                    nbLancers = Integer.parseInt("1");
-                    nbFaces = Integer.parseInt(roll.split("[\\+\\-]")[0]);
+                    currentRoll.setNbLancers(Integer.parseInt("1"));
+                    currentRoll.setNbFaces(Integer.parseInt(roll.split("[\\+\\-]")[0]));
 
                     // 6-1 12+2
                     if (roll.contains("-") || roll.contains("+")) {
 
-                        modificateur = Integer.parseInt(roll.split("[\\+\\-]")[1]);
-                        symbole = roll.contains("+") ? "+" : "-";
+                        currentRoll.setModificateur(Integer.parseInt(roll.split("[\\+\\-]")[1]));
+                        currentRoll.setSymbole(roll.contains("+") ? "+" : "-");
 
                     }
 
                 }
 
-                for (int z = 0; z < nbLancers; z++) {
+                for (int z = 0; z < currentRoll.getNbLancers(); z++) {
 
                     if (!roll.contains("d")) {
-                        resultatsRolls.add("1d" + roll);
+                        currentRoll.getResultatsRolls().add("1d" + roll);
                     } else {
 
-                        resultatsRolls.add("1d" + roll.split("d")[1]);
+                        currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1]);
                     }
                 }
-                for (int i = 0; i < nbLancers; i++) {
+
+                for (int i = 0; i < currentRoll.getNbLancers(); i++) {
 
 
-                    if (StringUtils.isEmpty(symbole)) {
+                    if (StringUtils.isEmpty(currentRoll.getSymbole())) {
 
-                        resultats.add((Integer.toString(random.nextInt(nbFaces) + 1)));
-                        System.out.println("SYMBOLE vide");
+                        res = random.nextInt(currentRoll.getNbFaces()) + 1;
+
+                        total += (res);
+                        currentRoll.getResultats().add(Integer.toString(res));
 
                     } else {
 
-                        if ("+".equals(symbole)) {
+                        if ("+".equals(currentRoll.getSymbole())) {
 
-                            System.out.println("SYMBOLE +");
-                            resultats.add((Integer.toString(random.nextInt(nbFaces) + modificateur + 1)));
+                            res = random.nextInt(currentRoll.getNbFaces()) + currentRoll.getModificateur() + 1;
+                            total += res;
+                            currentRoll.getResultats().add((Integer.toString(res)));
 
                         } else {
-                            System.out.println("SYMBOLE -");
-                            resultats.add((Integer.toString(random.nextInt(nbFaces) - modificateur + 1)));
+
+                            res = random.nextInt(currentRoll.getNbFaces()) - currentRoll.getModificateur() + 1;
+                            total += res;
+                            currentRoll.getResultats().add((Integer.toString(res)));
+
+
                         }
                     }
 
 
                 }
+
+                currentRoll.getTotal().append(total + "**");
+                listeRolls.add(currentRoll);
+
             }
 
+            StringBuilder sb = new StringBuilder("==========\n\n**(/roll " + rollOptions + ")**\n\n");
 
-            StringBuilder sb = new StringBuilder("Voici les résultats :\n");
+            for (Roll roll : listeRolls) {
 
-            System.out.println("Restultats size : " + resultats.size());
-            System.out.println("RestultatsRolls size : " + resultatsRolls.size());
+                sb.append(roll.toString());
 
-            for (int y = 0; y < resultats.size(); y++) {
-
-                sb.append(resultatsRolls.get(y) + " = " + "**" + resultats.get(y) + "**").append("\n");
             }
 
-
-            event.replyEmbeds(EmbedUtils.embedReponse("Lancer de dés", "Voici les résultats", sb.toString(),
-                    ConstantesBot.FICHIER_ROLL_THUMBNAIL, Color.MAGENTA).build()).queue();
+            event.reply(sb.toString()).queue();
 
         }
 

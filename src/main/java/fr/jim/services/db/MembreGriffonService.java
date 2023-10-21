@@ -1,6 +1,6 @@
 package fr.jim.services.db;
 
-import fr.jim.entites.MembreGriffon;
+import fr.jim.entites.db.MembreGriffon;
 import fr.jim.mappers.MembreGriffonMapper;
 import fr.jim.repositories.MembresGriffonRepository;
 import org.apache.logging.log4j.LogManager;

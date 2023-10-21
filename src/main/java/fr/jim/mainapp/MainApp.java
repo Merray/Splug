@@ -1,7 +1,6 @@
 package fr.jim.mainapp;
 
 import fr.jim.config.ConstantesBot;
-import fr.jim.exceptions.MissingTokenException;
 import fr.jim.listeners.BotModalListener;
 import fr.jim.listeners.BotSlashCommandListener;
 import fr.jim.utils.CommandUtils;
@@ -16,8 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
 public class MainApp {
     private static final Logger LOGGER = LogManager.getLogger(MainApp.class);
 
@@ -25,7 +22,7 @@ public class MainApp {
     static Properties APP_PROPERTIES = PropertiesUtils.getAppPropsProperties();
 
     public static void main(String[] args)
-            throws InterruptedException, MissingTokenException {
+            throws InterruptedException {
 
 
         JDA bot = JDABuilder.createDefault(recupererToken())
@@ -42,10 +39,10 @@ public class MainApp {
         if (Boolean.parseBoolean(APP_PROPERTIES.getProperty(ConstantesBot.UPDATE_COMMANDES))) {
 
             Guild guildeTest = bot.getGuildById(1024955895781806081L);
-//            Guild guildeVouivrarium = bot.getGuildById(673141124944363530L);
+            Guild guildeVouivrarium = bot.getGuildById(673141124944363530L);
 
             CommandUtils.upsertCommands(guildeTest);
-//            CommandUtils.upsertCommands(guildeVouivrarium);
+            CommandUtils.upsertCommands(guildeVouivrarium);
         }
 
 

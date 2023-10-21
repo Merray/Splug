@@ -1,7 +1,7 @@
 package fr.jim.mappers;
 
 import fr.jim.config.ConstantesDb;
-import fr.jim.entites.MembreGriffon;
+import fr.jim.entites.db.MembreGriffon;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

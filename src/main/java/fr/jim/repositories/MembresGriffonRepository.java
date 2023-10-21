@@ -1,6 +1,6 @@
 package fr.jim.repositories;
 
-import fr.jim.entites.MembreGriffon;
+import fr.jim.entites.db.MembreGriffon;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
