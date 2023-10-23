@@ -187,6 +187,23 @@ public class SlashRollService {
 
                         currentRoll.getTotal().append(total + "**");
                     }
+                } else {
+
+                    if ("+".equals(currentRoll.getSymbole())) {
+                        currentRoll.getTotal()
+                                .append((total - currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
+                                        currentRoll.getModificateur() + " = " + total + "**");
+                        
+                    } else if ("-".equals(currentRoll.getSymbole())) {
+
+                        total += currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
+
+                        currentRoll.getTotal()
+                                .append((total + currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
+                                        currentRoll.getModificateur() + " = " + total + "**");
+
+                    }
+
                 }
 
 

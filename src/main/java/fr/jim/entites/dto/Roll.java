@@ -79,7 +79,7 @@ public class Roll {
 
     @Override public String toString() {
 
-        if (this.getResultatsRolls().size() == 1) {
+        if (this.getResultatsRolls().size() == 1 && this.getModificateur() == 0) {
             return this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
                     "\n-------------------\n";
         } else {
