@@ -1,0 +1,9 @@
+version: '2.4'  # Use a suitable version for Docker Compose 1.25.0
+
+services:
+  splug:
+    image: splug
+    volumes:
+      - /opt/splug/logs:/Splug-master/target/logs
+      - /opt/splug/application.properties:/Splug-master/target/application.properties
+    restart: unless-stopped
