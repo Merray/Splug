@@ -80,13 +80,34 @@ public class Roll {
     @Override public String toString() {
 
         if (this.getResultatsRolls().size() == 1 && this.getModificateur() == 0) {
-            return this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
-                    "\n-------------------\n";
+            if (this.nbFaces == 20 && "20".equals(this.getResultats().get(0))) {
+                return ":crossed_swords: " + this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
+                        " :crossed_swords:\n-------------------\n";
+            } else if (this.nbFaces == 20 && "1".equals(this.getResultats().get(0))) {
+
+                return ":csob: " + this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
+                        " :sob:\n-------------------\n";
+            } else {
+
+                return this.getResultatsRolls().get(0) + " = " + this.getResultats().get(0) +
+                        "\n-------------------\n";
+            }
         } else {
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < this.getResultatsRolls().size(); i++) {
-                sb.append(this.getResultatsRolls().get(i) + " = " + this.getResultats().get(i) + "\n");
+
+                if (this.nbFaces == 20 && "20".equals(this.getResultats().get(i))) {
+
+                    sb.append(":crossed_swords: " + this.getResultatsRolls().get(i) + " = " + this.getResultats().get(i)
+                            + " :crossed_swords:\n");
+                } else if (this.nbFaces == 20 && "1".equals(this.getResultats().get(i))) {
+
+                    sb.append(":sob: " + this.getResultatsRolls().get(i) + " = " + this.getResultats().get(i)
+                            + " :sob:\n");
+                } else {
+                    sb.append(this.getResultatsRolls().get(i) + " = " + this.getResultats().get(i) + "\n");
+                }
             }
 
             sb.append(this.getTotal() + "\n-------------------\n");

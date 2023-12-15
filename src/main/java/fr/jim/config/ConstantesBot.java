@@ -20,6 +20,9 @@ public class ConstantesBot {
     // Option des commandes slash
     public static final String OPTION_SLASH_ROLL_OPTIONS = "roll-options";
     public static final String OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION = "ex: 1d6 2d12 10";
+    public static final String OPTION_SLASH_ROLL_INVISIBLE = "invisible";
+    public static final String OPTION_SLASH_ROLL_INVISIBLE_DESCRIPTION = "Si true, seul le lanceur voit le résultat";
+
 
     public static final String OPTION_SLASH_GRIFFON_ACTION = "action";
     public static final String OPTION_SLASH_GRIFFON_ACTION_ADD = "add";

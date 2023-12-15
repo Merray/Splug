@@ -20,7 +20,9 @@ public class CommandUtils {
                     // roll
                     Commands.slash(ConstantesBot.SLASH_ROLL, ConstantesBot.DESCRIPTION_SLASH_ROLL)
                             .addOption(OptionType.STRING, ConstantesBot.OPTION_SLASH_ROLL_OPTIONS
-                                    , ConstantesBot.OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION, true),
+                                    , ConstantesBot.OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION, true)
+                            .addOption(OptionType.BOOLEAN, ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE,
+                                    ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE_DESCRIPTION, false),
                     // Griffon
                     Commands.slash("griffon", "commandes associées au GN griffon")
                             .addOptions(

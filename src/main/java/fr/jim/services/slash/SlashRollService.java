@@ -31,6 +31,8 @@ public class SlashRollService {
 
 
         String rollOptions = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_OPTIONS).getAsString();
+        boolean isInvisible = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE) != null ?
+                event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE).getAsBoolean() : false;
         LOGGER.info("/roll " + rollOptions + " lancée par " + event.getMember().getEffectiveName());
 
         rollMatcher = rollPattern.matcher(rollOptions);
@@ -193,7 +195,7 @@ public class SlashRollService {
                         currentRoll.getTotal()
                                 .append((total - currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
                                         currentRoll.getModificateur() + " = " + total + "**");
-                        
+
                     } else if ("-".equals(currentRoll.getSymbole())) {
 
                         total += currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
@@ -220,7 +222,7 @@ public class SlashRollService {
 
             }
 
-            event.reply(sb.toString()).queue();
+            event.reply(sb.toString()).setEphemeral(isInvisible).queue();
 
         }
 
