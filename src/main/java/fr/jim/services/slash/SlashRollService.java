@@ -20,7 +20,7 @@ public class SlashRollService {
     private static final Logger LOGGER = LogManager.getLogger(SlashRollService.class);
     private Random random = new Random();
 
-    Pattern rollPattern = Pattern.compile("^(([0-9]+|([0-9]+)?d[0-9]+)(\\+|-)?[0-9]*\\s*)+$");
+    Pattern rollPattern = Pattern.compile("^(([0-9]+|([0-9]+)?[dD][0-9]+)(\\+|-)?[0-9]*\\s*)+$");
 
     Matcher rollMatcher;
 
@@ -43,7 +43,7 @@ public class SlashRollService {
                     "/roll 1d6 2d12\n" +
                     "/roll 6 12-1 10+2\n" +
                     "/roll 1d6+1\n" +
-                    "/roll 1d10-2\n").queue();
+                    "/roll 1d10-2\n").setEphemeral(true).queue();
         } else {
 
             List<String> rolls = Arrays.stream(rollOptions.split(" ")).collect(Collectors.toList());
@@ -71,12 +71,12 @@ public class SlashRollService {
                 currentRoll.setSymbole("");
 
                 // Déterminer tous les attributs du roll
-                if (roll.contains("d")) {
+                if (roll.contains("d") || roll.contains("D")) {
 
                     // 1d6-1 1d12+2
                     if (roll.contains("-") || roll.contains("+")) {
 
-                        String[] valeurs = roll.split("d");
+                        String[] valeurs = roll.split("[dD]");
                         currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
                         currentRoll.setNbFaces(Integer.parseInt(valeurs[1].split("[\\+\\-]")[0]));
                         currentRoll.setModificateur(Integer.parseInt(valeurs[1].split("[\\+\\-]")[1]));
@@ -85,7 +85,7 @@ public class SlashRollService {
 
                     } else {
                         // 1d6 2d12
-                        String[] valeurs = roll.split("d");
+                        String[] valeurs = roll.split("[dD]");
                         currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
                         currentRoll.setNbFaces(Integer.parseInt(valeurs[1]));
                     }
@@ -108,7 +108,7 @@ public class SlashRollService {
                 // Alimenter les intitulés des rolls.
                 for (int z = 0; z < currentRoll.getNbLancers(); z++) {
 
-                    if (!roll.contains("d")) {
+                    if (!roll.contains("d") && !roll.contains("D")) {
 
                         if (currentRoll.getModificateur() != 0) {
 
@@ -125,11 +125,11 @@ public class SlashRollService {
 
                         if (currentRoll.getModificateur() != 0) {
 
-                            currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1].split("[\\+\\-]")[0]);
+                            currentRoll.getResultatsRolls().add("1d" + roll.split("[dD]")[1].split("[\\+\\-]")[0]);
 
                         } else {
 
-                            currentRoll.getResultatsRolls().add("1d" + roll.split("d")[1]);
+                            currentRoll.getResultatsRolls().add("1d" + roll.split("[dD]")[1]);
 
                         }
 
