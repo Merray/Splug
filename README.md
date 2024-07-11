@@ -1,4 +1,7 @@
-# BotVouivrarium
+# Splug
+![129097](https://github.com/Merray/Splug/assets/17614948/d8214a00-a60b-435a-84a2-5ee4ab0d4385)
+
+
 Bot pour le serveur Vouivrarium
 
 # Run with Docker
