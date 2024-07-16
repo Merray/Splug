@@ -1,8 +1,8 @@
 package fr.jim.mainapp;
 
 import fr.jim.config.ConstantesBot;
-import fr.jim.listeners.BotModalListener;
 import fr.jim.listeners.BotSlashCommandListener;
+import fr.jim.listeners.BotVoiceChannelListener;
 import fr.jim.utils.CommandUtils;
 import fr.jim.utils.PropertiesUtils;
 import net.dv8tion.jda.api.JDA;
@@ -30,7 +30,8 @@ public class MainApp {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.playing(ConstantesBot.PLAYING_D_AND_D))
-                .addEventListeners(new BotSlashCommandListener(), new BotModalListener())
+                .addEventListeners(new BotSlashCommandListener(),
+                        new BotVoiceChannelListener())
                 .build().awaitReady();
 
         LOGGER.info("BOT PRET");

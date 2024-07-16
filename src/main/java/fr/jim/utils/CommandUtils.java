@@ -4,7 +4,6 @@ import fr.jim.config.ConstantesBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,21 +21,10 @@ public class CommandUtils {
                             .addOption(OptionType.STRING, ConstantesBot.OPTION_SLASH_ROLL_OPTIONS
                                     , ConstantesBot.OPTION_SLASH_ROLL_OPTIONS_DESCRIPTION, true)
                             .addOption(OptionType.BOOLEAN, ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE,
-                                    ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE_DESCRIPTION, false),
-                    // Griffon
-                    Commands.slash("griffon", "commandes associées au GN griffon")
-                            .addOptions(
-                                    new OptionData(OptionType.STRING, "action", "Action à faire pour ce GN", true)
-                                            .addChoice("add", "add")
-                                            .addChoice("remove", "remove")
-                                            .addChoice("list", "list")
-                            )
+                                    ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE_DESCRIPTION, false)
             ).queue();
             LOGGER.info("Update de la commande {} pour la guilde {}"
                     , ConstantesBot.SLASH_ROLL, guilde.getName());
-
-            LOGGER.info("Update de la commande {} pour la guilde {}"
-                    , "griffon", guilde.getName());
 
         }
     }
