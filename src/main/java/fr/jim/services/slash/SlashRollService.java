@@ -30,6 +30,8 @@ public class SlashRollService {
     public void roll(SlashCommandInteractionEvent event) {
 
 
+        event.deferReply().queue();
+
         String rollOptions = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_OPTIONS).getAsString();
         boolean isInvisible = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE) != null ?
                 event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE).getAsBoolean() : false;
@@ -39,7 +41,7 @@ public class SlashRollService {
 
 
         if (!rollMatcher.matches()) {
-            event.reply("Les options ne sont pas correctes, voici quelques exemples :\n" +
+            event.getHook().sendMessage("Les options ne sont pas correctes, voici quelques exemples :\n" +
                     "/roll 1d6 2d12\n" +
                     "/roll 6 12-1 10+2\n" +
                     "/roll 1d6+1\n" +
@@ -51,7 +53,8 @@ public class SlashRollService {
 
             if (rolls.size() > 20) {
 
-                event.reply("Nombre max de rolls : 20. Tu en as lancé " + rolls.size()).setEphemeral(true).queue();
+                event.getHook().sendMessage("Nombre max de rolls : 20. Tu en as lancé " + rolls.size())
+                        .setEphemeral(true).queue();
                 LOGGER.info("Trop de rolls : " + rolls.size());
                 return;
             }
@@ -222,7 +225,7 @@ public class SlashRollService {
 
             }
 
-            event.reply(sb.toString()).setEphemeral(isInvisible).queue();
+            event.getHook().sendMessage(sb.toString()).setEphemeral(isInvisible).queue();
 
         }
 
