@@ -1,9 +1,9 @@
 package fr.jim.services.slash;
 
 import fr.jim.config.ConstantesBot;
+import fr.jim.entites.dto.ComparedRoll;
 import fr.jim.entites.dto.Roll;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +22,11 @@ public class SlashRollService {
 
     Pattern rollPattern = Pattern.compile("^(([0-9]+|([0-9]+)?[dD][0-9]+)(\\+|-)?[0-9]*\\s*)+$");
 
+    Pattern rollComparePattern = Pattern
+            .compile("^(([0-9]+|([0-9]+)?[dD][0-9]+)(\\+|-)?[0-9]*)\\s*(<|>)\\s*[0-9]+$");
+
     Matcher rollMatcher;
+    Matcher rollCompareMatcher;
 
     public SlashRollService() {
     }
@@ -38,18 +42,40 @@ public class SlashRollService {
         LOGGER.info("/roll " + rollOptions + " lancée par " + event.getMember().getEffectiveName());
 
         rollMatcher = rollPattern.matcher(rollOptions);
+        rollCompareMatcher = rollComparePattern.matcher(rollOptions);
 
 
-        if (!rollMatcher.matches()) {
+        if (!rollMatcher.matches() && !rollCompareMatcher.matches()) {
             event.getHook().sendMessage("Les options ne sont pas correctes, voici quelques exemples :\n" +
                     "/roll 1d6 2d12\n" +
                     "/roll 6 12-1 10+2\n" +
                     "/roll 1d6+1\n" +
-                    "/roll 1d10-2\n").setEphemeral(true).queue();
+                    "/roll 1d10-2\n" +
+                    "/roll 1d10 > 2\n" +
+                    "/roll 20 < 5").setEphemeral(true).queue();
+            return;
+        }
+
+        if (rollCompareMatcher.matches()) {
+
+            ComparedRoll comparedRoll = new ComparedRoll(rollOptions);
+
+//            System.out.println(comparedRoll.getRoll().getIntitules());
+//            System.out.println(comparedRoll.getRoll().getResultats());
+//            System.out.println(comparedRoll.getRoll().getTotal());
+//            System.out.println(comparedRoll.getComparator());
+//            System.out.println(comparedRoll.getComparedNumber());
+//            System.out.println("Succes : " + comparedRoll.isSuccess());
+
+            event.getHook().sendMessage(
+                    "Résultat de " + rollOptions + " : " +
+                            (comparedRoll.isSuccess() ? ":white_check_mark:" : ":x:") +
+                            " (" +
+                            comparedRoll.getRoll().getTotal() + ")").queue();
+
         } else {
 
             List<String> rolls = Arrays.stream(rollOptions.split(" ")).collect(Collectors.toList());
-
 
             if (rolls.size() > 20) {
 
@@ -59,162 +85,15 @@ public class SlashRollService {
                 return;
             }
 
-
             List<Roll> listeRolls = new ArrayList<>();
             Roll currentRoll;
-            int res;
-            int total;
 
             for (String roll : rolls) {
 
-
-                currentRoll = new Roll();
-
-                total = 0;
-                currentRoll.setSymbole("");
-
-                // Déterminer tous les attributs du roll
-                if (roll.contains("d") || roll.contains("D")) {
-
-                    // 1d6-1 1d12+2
-                    if (roll.contains("-") || roll.contains("+")) {
-
-                        String[] valeurs = roll.split("[dD]");
-                        currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
-                        currentRoll.setNbFaces(Integer.parseInt(valeurs[1].split("[\\+\\-]")[0]));
-                        currentRoll.setModificateur(Integer.parseInt(valeurs[1].split("[\\+\\-]")[1]));
-                        currentRoll.setSymbole(valeurs[1].contains("+") ? "+" : "-");
-
-
-                    } else {
-                        // 1d6 2d12
-                        String[] valeurs = roll.split("[dD]");
-                        currentRoll.setNbLancers(Integer.parseInt(valeurs[0]));
-                        currentRoll.setNbFaces(Integer.parseInt(valeurs[1]));
-                    }
-
-                } else {
-                    // 6 12
-                    currentRoll.setNbLancers(Integer.parseInt("1"));
-                    currentRoll.setNbFaces(Integer.parseInt(roll.split("[\\+\\-]")[0]));
-
-                    // 6-1 12+2
-                    if (roll.contains("-") || roll.contains("+")) {
-
-                        currentRoll.setModificateur(Integer.parseInt(roll.split("[\\+\\-]")[1]));
-                        currentRoll.setSymbole(roll.contains("+") ? "+" : "-");
-
-                    }
-
-                }
-
-                // Alimenter les intitulés des rolls.
-                for (int z = 0; z < currentRoll.getNbLancers(); z++) {
-
-                    if (!roll.contains("d") && !roll.contains("D")) {
-
-                        if (currentRoll.getModificateur() != 0) {
-
-                            currentRoll.getResultatsRolls().add("1d" + roll.split("[\\+\\-]")[0]);
-
-                        } else {
-
-                            currentRoll.getResultatsRolls().add("1d" + roll);
-
-                        }
-
-
-                    } else {
-
-                        if (currentRoll.getModificateur() != 0) {
-
-                            currentRoll.getResultatsRolls().add("1d" + roll.split("[dD]")[1].split("[\\+\\-]")[0]);
-
-                        } else {
-
-                            currentRoll.getResultatsRolls().add("1d" + roll.split("[dD]")[1]);
-
-                        }
-
-
-                    }
-                }
-
-                // Alimenter les résultats des rolls
-                for (int i = 0; i < currentRoll.getNbLancers(); i++) {
-
-                    res = random.nextInt(currentRoll.getNbFaces()) + 1;
-
-                    if (StringUtils.isEmpty(currentRoll.getSymbole())) {
-
-                        total += (res);
-                        currentRoll.getResultats().add(Integer.toString(res));
-
-                    } else {
-
-                        if ("+".equals(currentRoll.getSymbole())) {
-
-                            total += res + currentRoll.getModificateur();
-                            currentRoll.getResultats().add((Integer.toString(res)));
-
-                        } else {
-
-                            total += res - currentRoll.getModificateur();
-                            currentRoll.getResultats().add((Integer.toString(res)));
-
-
-                        }
-                    }
-
-
-                }
-
-                // Alimenter le total du roll
-                if (currentRoll.getNbLancers() > 1) {
-
-                    if ("+".equals(currentRoll.getSymbole())) {
-
-                        total -= currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
-
-                        currentRoll.getTotal()
-                                .append((total - currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
-                                        currentRoll.getModificateur() + " = " + total + "**");
-
-                    } else if ("-".equals(currentRoll.getSymbole())) {
-
-                        total += currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
-
-                        currentRoll.getTotal()
-                                .append((total + currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
-                                        currentRoll.getModificateur() + " = " + total + "**");
-
-                    } else {
-
-                        currentRoll.getTotal().append(total + "**");
-                    }
-                } else {
-
-                    if ("+".equals(currentRoll.getSymbole())) {
-                        currentRoll.getTotal()
-                                .append((total - currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
-                                        currentRoll.getModificateur() + " = " + total + "**");
-
-                    } else if ("-".equals(currentRoll.getSymbole())) {
-
-                        total += currentRoll.getModificateur() * (currentRoll.getNbLancers() - 1);
-
-                        currentRoll.getTotal()
-                                .append((total + currentRoll.getModificateur()) + " " + currentRoll.getSymbole() + " " +
-                                        currentRoll.getModificateur() + " = " + total + "**");
-
-                    }
-
-                }
-
+                currentRoll = new Roll(roll);
 
                 // Ajout du roll complet à la liste des rolls de la commande
                 listeRolls.add(currentRoll);
-
             }
 
             StringBuilder sb = new StringBuilder("==========\n\n**(/roll " + rollOptions + ")**\n\n");
@@ -226,7 +105,6 @@ public class SlashRollService {
             }
 
             event.getHook().sendMessage(sb.toString()).setEphemeral(isInvisible).queue();
-
         }
 
 
