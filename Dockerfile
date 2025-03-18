@@ -13,5 +13,5 @@ RUN mvn clean install
 
 # Run the Splug application
 WORKDIR /Splug-master/target
-CMD ["java", "-jar", "./splug-2.0.0-jar-with-dependencies.jar"]
+CMD ["java", "-jar", "./splug-2.0.1-jar-with-dependencies.jar"]
 
