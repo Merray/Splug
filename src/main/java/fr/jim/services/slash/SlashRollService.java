@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class SlashRollService {
 
     private static final Logger LOGGER = LogManager.getLogger(SlashRollService.class);
-    private Random random = new Random();
 
     Pattern rollPattern = Pattern.compile("^(([0-9]+|([0-9]+)?[dD][0-9]+)(\\+|-)?[0-9]*\\s*)+$");
 
@@ -33,9 +31,6 @@ public class SlashRollService {
 
     public void roll(SlashCommandInteractionEvent event) {
 
-
-        event.deferReply().queue();
-
         String rollOptions = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_OPTIONS).getAsString();
         boolean isInvisible = event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE) != null ?
                 event.getOption(ConstantesBot.OPTION_SLASH_ROLL_INVISIBLE).getAsBoolean() : false;
@@ -46,26 +41,24 @@ public class SlashRollService {
 
 
         if (!rollMatcher.matches() && !rollCompareMatcher.matches()) {
+
+            event.deferReply(true).queue();
+
             event.getHook().sendMessage("Les options ne sont pas correctes, voici quelques exemples :\n" +
                     "/roll 1d6 2d12\n" +
                     "/roll 6 12-1 10+2\n" +
                     "/roll 1d6+1\n" +
                     "/roll 1d10-2\n" +
                     "/roll 1d10 > 2\n" +
-                    "/roll 20 < 5").setEphemeral(true).queue();
+                    "/roll 20 < 5").queue();
             return;
         }
 
         if (rollCompareMatcher.matches()) {
 
-            ComparedRoll comparedRoll = new ComparedRoll(rollOptions);
+            event.deferReply().queue();
 
-//            System.out.println(comparedRoll.getRoll().getIntitules());
-//            System.out.println(comparedRoll.getRoll().getResultats());
-//            System.out.println(comparedRoll.getRoll().getTotal());
-//            System.out.println(comparedRoll.getComparator());
-//            System.out.println(comparedRoll.getComparedNumber());
-//            System.out.println("Succes : " + comparedRoll.isSuccess());
+            ComparedRoll comparedRoll = new ComparedRoll(rollOptions);
 
             event.getHook().sendMessage(
                     "Résultat de " + rollOptions + " : " +
@@ -75,15 +68,20 @@ public class SlashRollService {
 
         } else {
 
+
             List<String> rolls = Arrays.stream(rollOptions.split(" ")).collect(Collectors.toList());
 
             if (rolls.size() > 20) {
+
+                event.deferReply(true).queue();
 
                 event.getHook().sendMessage("Nombre max de rolls : 20. Tu en as lancé " + rolls.size())
                         .setEphemeral(true).queue();
                 LOGGER.info("Trop de rolls : " + rolls.size());
                 return;
             }
+
+            event.deferReply().queue();
 
             List<Roll> listeRolls = new ArrayList<>();
             Roll currentRoll;
